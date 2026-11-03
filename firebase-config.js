@@ -1,13 +1,14 @@
-// ==================== FIREBASE CONFIGURATION - ALMA COFFEE SHOP ====================
-// 🔥 NOUVEAU PROJET : mixmax-kenitra
+// ==================== FIREBASE CONFIGURATION - DISTRUBUTION ====================
+// 🔥 NOUVEAU PROJET : distrubution-99caf (ami)
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBC-k40GID3VsUysUE1FY5AnCwwIt721wc",
-    authDomain: "mixmax-kenitra.firebaseapp.com",
-    projectId: "mixmax-kenitra",
-    storageBucket: "mixmax-kenitra.firebasestorage.app",
-    messagingSenderId: "226043910414",
-    appId: "1:226043910414:web:3ec6a43e47dbcb37f8df5f"
+    apiKey: "AIzaSyCAo4xh0kMGKE5Gps87gzPUTt6B-r28Vl8",
+    authDomain: "distrubution-99caf.firebaseapp.com",
+    databaseURL: "https://distrubution-99caf-default-rtdb.firebaseio.com",
+    projectId: "distrubution-99caf",
+    storageBucket: "distrubution-99caf.firebasestorage.app",
+    messagingSenderId: "243848082782",
+    appId: "1:243848082782:web:0ea9f289e573b4bce60bcf"
 };
 
 // Initialisation Firebase (version compat)
@@ -25,6 +26,6 @@ db.enablePersistence()
     .then(() => console.log('📱 Mode hors ligne activé'))
     .catch(err => console.warn('⚠️ Persistance désactivée:', err));
 
-console.log('☕ Alma Coffee Shop - Firebase OK');
+console.log('☕ Distribution - Firebase OK');
 console.log('✓ Projet:', firebaseConfig.projectId);
 console.log('✓ Auth Domain:', firebaseConfig.authDomain);
