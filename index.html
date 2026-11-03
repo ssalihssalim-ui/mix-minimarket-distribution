@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0A0D12">
+<meta name="description" content="Système de gestion E-SOLUTION POS">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>E-SOLUTION POS</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="shortcut icon" href="logo.png" type="image/png">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="apple-touch-icon" sizes="180x180" href="logo.png">
+<meta name="msapplication-TileImage" content="logo.png">
+<meta name="msapplication-TileColor" content="#0A0D12">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<!-- ✅ STYLE RESPONSIVE LOGIN / REGISTER — FORMULAIRE 80% + CENTRÉ + POLICE PRO -->
+<style id="auth-responsive-styles">
+/* ============================================
+   🌐 BASE GLOBALE — Police professionnelle Inter
+   ============================================ */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
+}
+
+/* ============================================
+   BASE - Login wrapper (formulaire TOUJOURS centré)
+   ============================================ */
+.login-wrapper {
+    min-height: 100vh;
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    padding-top: max(10px, env(safe-area-inset-top));
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    padding-left: max(10px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+    overflow: hidden;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ============================================
+   📐 CONTAINER — 80% de l'écran, TOUJOURS centré
+   ============================================ */
+.login-container,
+.register-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 80vw;
+    height: 80vh;
+    width: 80dvw;
+    height: 80dvh;
+    min-width: 320px;
+    min-height: 420px;
+    max-width: 1400px;
+    max-height: 900px;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);
+    background: #fff;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* ============================================
+   🎨 BRAND PANEL — Colonne gauche (design premium)
+   ============================================ */
+.login-brand,
+.register-brand {
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    padding: clamp(24px, 4vw, 48px) clamp(16px, 3vw, 32px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.login-brand::before,
+.register-brand::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 150%;
+    height: 150%;
+    background: radial-gradient(circle, rgba(20, 184, 166, 0.18) 0%, transparent 60%);
+    pointer-events: none;
+    animation: floatGlow 8s ease-in-out infinite;
+}
+
+@keyframes floatGlow {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-10%, 10%); }
+}
+
+.login-brand h1,
+.register-brand h1 {
+    font-size: clamp(1.2rem, 2.6vw, 2rem);
+    font-weight: 800;
+    color: #fff;
+    margin: clamp(12px, 2vh, 20px) 0 clamp(4px, 0.8vh, 8px);
+    letter-spacing: -0.8px;
+    line-height: 1.15;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    z-index: 1;
+}
+
+.login-brand h1 span,
+.register-brand h1 span {
+    color: #14B8A6;
+    text-shadow: 0 2px 12px rgba(20, 184, 166, 0.4);
+}
+
+.login-brand p,
+.register-brand p {
+    font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+    margin: 0;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.75) !important;
+    position: relative;
+    z-index: 1;
+    font-weight: 500;
+}
+
+.brand-icon {
+    width: clamp(50px, 8vw, 100px);
+    height: clamp(50px, 8vw, 100px);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(12px);
+    border: 2px solid rgba(20, 184, 166, 0.35);
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 8px 24px rgba(20, 184, 166, 0.15);
+}
+
+.brand-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* ============================================
+   📋 FORM PANEL — Colonne droite
+   ============================================ */
+.login-form,
+.register-form {
+    padding: clamp(20px, 3.5vw, 48px) clamp(16px, 3vw, 40px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #fff;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #E2E8F0 #F8FAFC;
+}
+
+.login-form::-webkit-scrollbar,
+.register-form::-webkit-scrollbar {
+    width: 6px;
+}
+.login-form::-webkit-scrollbar-track,
+.register-form::-webkit-scrollbar-track {
+    background: #F8FAFC;
+}
+.login-form::-webkit-scrollbar-thumb,
+.register-form::-webkit-scrollbar-thumb {
+    background: #E2E8F0;
+    border-radius: 3px;
+}
+
+.login-form h2,
+.register-form h2 {
+    font-size: clamp(1rem, 1.7vw, 1.6rem);
+    font-weight: 800;
+    color: #0F172A;
+    margin: 0 0 clamp(12px, 2vh, 24px);
+    letter-spacing: -0.6px;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ============================================
+   🔤 INPUTS — Design moderne
+   ============================================ */
+.login-form .input-group,
+.register-form .input-group {
+    display: flex;
+    align-items: center;
+    background: #F8FAFC;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 11px;
+    padding: 2px 14px;
+    margin-bottom: clamp(8px, 1.2vh, 14px);
+    transition: all 0.2s ease;
+    min-height: clamp(42px, 5.5vh, 52px);
+    box-sizing: border-box;
+}
+
+.login-form .input-group:hover,
+.register-form .input-group:hover {
+    border-color: #CBD5E1;
+}
+
+.login-form .input-group:focus-within,
+.register-form .input-group:focus-within {
+    border-color: #14B8A6;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12);
+    transform: translateY(-1px);
+}
+
+.login-form .input-group i,
+.register-form .input-group i {
+    color: #94A3B8;
+    font-size: clamp(13px, 1.1vw, 16px);
+    margin-right: 10px;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+    transition: color 0.2s;
+}
+
+.login-form .input-group:focus-within i,
+.register-form .input-group:focus-within i {
+    color: #14B8A6;
+}
+
+.login-form .input-group input,
+.login-form .input-group select,
+.register-form .input-group input,
+.register-form .input-group select {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 10px 0;
+    font-size: max(16px, clamp(13px, 1.1vw, 15px));
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    color: #0F172A;
+    outline: none;
+    min-width: 0;
+    width: 100%;
+}
+
+.login-form .input-group input::placeholder,
+.register-form .input-group input::placeholder {
+    color: #94A3B8;
+    font-weight: 400;
+}
+
+/* ============================================
+   🔘 BOUTONS
+   ============================================ */
+.btn-login {
+    width: 100%;
+    padding: clamp(10px, 1.6vh, 14px) 20px;
+    background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
+    color: #fff;
+    border: none;
+    border-radius: 11px;
+    font-size: clamp(13px, 1.1vw, 16px);
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(20, 184, 166, 0.35);
+    min-height: clamp(42px, 5.5vh, 52px);
+    margin-top: clamp(8px, 1.2vh, 18px);
+    box-sizing: border-box;
+}
+
+.btn-login:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(20, 184, 166, 0.45);
+}
+
+.btn-login:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-login:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#quickLoginBtn {
+    transition: all 0.2s ease;
+    width: clamp(42px, 5.5vh, 52px) !important;
+    min-width: clamp(42px, 5.5vh, 52px) !important;
+    height: auto !important;
+    font-size: clamp(0.9rem, 1vw, 1.2rem) !important;
+    font-family: 'Inter', sans-serif;
+}
+
+#quickLoginBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45) !important;
+}
+
+/* ============================================
+   🔗 REGISTER LINK
+   ============================================ */
+.register-link {
+    text-align: center;
+    margin-top: clamp(10px, 1.5vh, 20px);
+    font-size: clamp(11px, 0.95vw, 14px);
+    color: #64748B;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+}
+
+.register-link strong {
+    color: #14B8A6;
+    cursor: pointer;
+    font-weight: 700;
+    transition: color 0.2s;
+}
+
+.register-link strong:hover {
+    color: #0D9488;
+    text-decoration: underline;
+}
+
+/* ============================================
+   📱 TABLETTES (≤ 1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+    .login-container,
+    .register-container {
+        width: 88vw;
+        width: 88dvw;
+        height: 85vh;
+        height: 85dvh;
+        max-width: 900px;
+        max-height: 700px;
+    }
+
+    .login-brand,
+    .register-brand {
+        padding: 28px 20px;
+    }
+
+    .login-form,
+    .register-form {
+        padding: 24px 22px;
+    }
+}
+
+/* ============================================
+   📱 GRANDS TÉLÉPHONES (≤ 768px) — 1 colonne
+   ============================================ */
+@media (max-width: 768px) {
+    .login-wrapper {
+        padding: 8px;
+        padding-top: max(8px, env(safe-area-inset-top));
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+
+    .login-container,
+    .register-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        width: 94vw;
+        width: 94dvw;
+        height: 94vh;
+        height: 94dvh;
+        max-width: 500px;
+        max-height: none;
+        min-height: 500px;
+        border-radius: 20px;
+    }
+
+    .login-brand,
+    .register-brand {
+        padding: 16px 20px;
+        flex-direction: row;
+        gap: 14px;
+        justify-content: flex-start;
+        text-align: left;
+    }
+
+    .login-brand::before,
+    .register-brand::before {
+        display: none;
+    }
+
+    .login-brand h1,
+    .register-brand h1 {
+        font-size: 1.1rem;
+        margin: 0 0 2px;
+    }
+
+    .login-brand p,
+    .register-brand p {
+        font-size: 0.75rem;
+        margin: 0;
+    }
+
+    .brand-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .login-form,
+    .register-form {
+        padding: 20px 18px 24px;
+        overflow-y: auto;
+    }
+
+    .login-form h2,
+    .register-form h2 {
+        font-size: 1.15rem;
+        margin-bottom: 14px;
+    }
+
+    .login-form .input-group,
+    .register-form .input-group {
+        min-height: 44px;
+        padding: 2px 12px;
+        margin-bottom: 10px;
+    }
+
+    .login-form .input-group input,
+    .login-form .input-group select,
+    .register-form .input-group input,
+    .register-form .input-group select {
+        font-size: 16px !important;
+        padding: 8px 0;
+    }
+
+    .btn-login {
+        padding: 12px 16px;
+        font-size: 14px;
+        min-height: 44px;
+        margin-top: 12px;
+    }
+
+    #quickLoginBtn {
+        width: 44px !important;
+        min-width: 44px !important;
+    }
+
+    .register-link {
+        font-size: 12px;
+        margin-top: 12px;
+    }
+}
+
+/* ============================================
+   📱 PETITS TÉLÉPHONES (≤ 480px)
+   ============================================ */
+@media (max-width: 480px) {
+    .login-container,
+    .register-container {
+        width: 96vw;
+        width: 96dvw;
+        height: 96vh;
+        height: 96dvh;
+        min-height: 460px;
+        border-radius: 16px;
+    }
+
+    .login-brand,
+    .register-brand {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+
+    .login-brand h1,
+    .register-brand h1 {
+        font-size: 1rem;
+    }
+
+    .login-brand p,
+    .register-brand p {
+        font-size: 0.7rem;
+    }
+
+    .brand-icon {
+        width: 42px;
+        height: 42px;
+    }
+
+    .login-form,
+    .register-form {
+        padding: 16px 14px 20px;
+    }
+
+    .login-form h2,
+    .register-form h2 {
+        font-size: 1.05rem;
+        margin-bottom: 12px;
+    }
+
+    .login-form .input-group,
+    .register-form .input-group {
+        min-height: 42px;
+        padding: 2px 10px;
+        margin-bottom: 8px;
+    }
+
+    .login-form .input-group i,
+    .register-form .input-group i {
+        font-size: 13px;
+        margin-right: 8px;
+        width: 16px;
+    }
+
+    .login-form .input-group input,
+    .login-form .input-group select,
+    .register-form .input-group input,
+    .register-form .input-group select {
+        font-size: 16px !important;
+        padding: 7px 0;
+    }
+
+    .btn-login {
+        padding: 11px 14px;
+        font-size: 13px;
+        min-height: 42px;
+        margin-top: 10px;
+    }
+
+    #quickLoginBtn {
+        width: 42px !important;
+        min-width: 42px !important;
+        font-size: 0.95rem !important;
+    }
+
+    .register-link {
+        font-size: 11px;
+        margin-top: 10px;
+    }
+}
+
+/* ============================================
+   📱 TRÈS PETITS TÉLÉPHONES (≤ 375px — iPhone SE)
+   ============================================ */
+@media (max-width: 375px) {
+    .login-container,
+    .register-container {
+        width: 98vw;
+        width: 98dvw;
+        height: 98vh;
+        height: 98dvh;
+        min-height: 440px;
+        border-radius: 14px;
+    }
+
+    .login-brand,
+    .register-brand {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .login-brand h1,
+    .register-brand h1 {
+        font-size: 0.9rem;
+    }
+
+    .login-brand p,
+    .register-brand p {
+        font-size: 0.65rem;
+    }
+
+    .brand-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .login-form,
+    .register-form {
+        padding: 12px 12px 16px;
+    }
+
+    .login-form h2,
+    .register-form h2 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    .login-form .input-group,
+    .register-form .input-group {
+        min-height: 40px;
+        margin-bottom: 7px;
+    }
+
+    .login-form .input-group input,
+    .login-form .input-group select,
+    .register-form .input-group input,
+    .register-form .input-group select {
+        font-size: 16px !important;
+        padding: 6px 0;
+    }
+
+    .btn-login {
+        padding: 10px 12px;
+        font-size: 12px;
+        min-height: 40px;
+        margin-top: 8px;
+    }
+
+    #quickLoginBtn {
+        width: 40px !important;
+        min-width: 40px !important;
+    }
+
+    .register-link {
+        font-size: 11px;
+        margin-top: 8px;
+    }
+}
+
+/* ============================================
+   🔄 MODE PAYSAGE MOBILE (hauteur ≤ 500px)
+   ============================================ */
+@media (max-height: 500px) and (orientation: landscape) {
+    .login-container,
+    .register-container {
+        grid-template-columns: 1fr 1.4fr;
+        grid-template-rows: 1fr;
+        width: 98vw;
+        width: 98dvw;
+        height: 98vh;
+        height: 98dvh;
+        max-width: none;
+        max-height: none;
+        border-radius: 12px;
+    }
+
+    .login-brand,
+    .register-brand {
+        padding: 12px 14px;
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+
+    .login-brand h1,
+    .register-brand h1 {
+        font-size: 1rem;
+        margin: 4px 0 2px;
+    }
+
+    .login-brand p,
+    .register-brand p {
+        font-size: 0.65rem;
+    }
+
+    .brand-icon {
+        width: 44px;
+        height: 44px;
+    }
+
+    .login-form,
+    .register-form {
+        padding: 12px 16px;
+        overflow-y: auto;
+    }
+
+    .login-form h2,
+    .register-form h2 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    .login-form .input-group,
+    .register-form .input-group {
+        min-height: 36px;
+        margin-bottom: 6px;
+        padding: 2px 10px;
+    }
+
+    .login-form .input-group input,
+    .login-form .input-group select,
+    .register-form .input-group input,
+    .register-form .input-group select {
+        font-size: 16px !important;
+        padding: 5px 0;
+    }
+
+    .btn-login {
+        padding: 8px 14px;
+        min-height: 36px;
+        font-size: 13px;
+        margin-top: 8px;
+    }
+
+    #quickLoginBtn {
+        width: 36px !important;
+        min-width: 36px !important;
+        font-size: 0.9rem !important;
+    }
+
+    .register-link {
+        font-size: 11px;
+        margin-top: 8px;
+    }
+}
+
+/* ============================================
+   🖥️ TRÈS GRANDS ÉCRANS (≥ 1440px)
+   ============================================ */
+@media (min-width: 1440px) {
+    .login-container,
+    .register-container {
+        width: 75vw;
+        width: 75dvw;
+        height: 78vh;
+        height: 78dvh;
+        max-width: 1300px;
+        max-height: 850px;
+    }
+
+    .login-form h2,
+    .register-form h2 {
+        font-size: 1.8rem;
+    }
+
+    .login-brand h1,
+    .register-brand h1 {
+        font-size: 2.2rem;
+    }
+
+    .brand-icon {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+/* ============================================
+   🖥️ ULTRA-WIDE (≥ 1920px)
+   ============================================ */
+@media (min-width: 1920px) {
+    .login-container,
+    .register-container {
+        width: 70vw;
+        width: 70dvw;
+        height: 75vh;
+        height: 75dvh;
+        max-width: 1400px;
+        max-height: 900px;
+    }
+
+    .login-form h2,
+    .register-form h2 {
+        font-size: 2rem;
+    }
+
+    .login-brand h1,
+    .register-brand h1 {
+        font-size: 2.4rem;
+    }
+
+    .brand-icon {
+        width: 140px;
+        height: 140px;
+    }
+}
+
+/* ============================================
+   ♿ PREFERS-REDUCED-MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+    .btn-login,
+    #quickLoginBtn,
+    .register-link strong,
+    .login-brand::before,
+    .register-brand::before {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* ============================================
+   🎨 REFONTE MINIMALISTE — SIDEBAR + DASHBOARD
+   Bleu #2563EB + Blanc + Gris #F7F8FA
+   Cohérent avec POS et pages admin
+   ============================================ */
+
+/* ========== DASHBOARD CONTAINER ========== */
+.dashboard {
+    background: #F7F8FA !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.dashboard .main-content {
+    background: #F7F8FA !important;
+    padding: 24px !important;
+    min-height: 100vh;
+}
+
+/* ========== PAGE HEADER ========== */
+.dashboard .page-header {
+    background: #FFFFFF !important;
+    border-radius: 16px !important;
+    padding: 20px 24px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    border: 1px solid rgba(0,0,0,0.04) !important;
+    margin-bottom: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+}
+
+.dashboard .page-header .header-title {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.dashboard .page-header .header-title i {
+    background: linear-gradient(135deg, #3B82F6, #1D4ED8) !important;
+    color: #FFFFFF !important;
+    padding: 10px !important;
+    border-radius: 12px !important;
+    font-size: 18px !important;
+    box-shadow: 0 4px 12px rgba(59,130,246,0.3) !important;
+}
+
+.dashboard .page-header .header-title h2 {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: #0F172A !important;
+    letter-spacing: -0.5px !important;
+    margin: 0 !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+/* ========== SIDEBAR ========== */
+.sidebar {
+    background: #FFFFFF !important;
+    border-right: 1px solid #E2E8F0 !important;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.03) !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.sidebar .sidebar-header {
+    background: #FFFFFF !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+    padding: 20px 18px !important;
+}
+
+.sidebar .sidebar-logo {
+    width: 52px !important;
+    height: 52px !important;
+    background: linear-gradient(135deg, #EFF6FF, #DBEAFE) !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 12px !important;
+    border: 1px solid #BFDBFE !important;
+}
+
+.sidebar .sidebar-logo-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 12px !important;
+}
+
+.sidebar .sidebar-header h2 {
+    color: #0F172A !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.4px !important;
+    margin: 0 0 2px 0 !important;
+}
+
+.sidebar .sidebar-header h2 span {
+    color: #2563EB !important;
+}
+
+.sidebar .sidebar-subtitle {
+    color: #64748B !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
+}
+
+.sidebar .sidebar-nav {
+    padding: 12px 10px !important;
+    flex: 1 !important;
+    overflow-y: auto !important;
+}
+
+.sidebar .sidebar-nav ul {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 0 12px 0 !important;
+}
+
+/* ========== NAV ITEMS ========== */
+.sidebar .nav-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 12px 16px !important;
+    border-radius: 10px !important;
+    color: #334155 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    margin-bottom: 2px !important;
+    border: 1px solid transparent !important;
+    user-select: none !important;
+    position: relative !important;
+}
+
+.sidebar .nav-item:hover {
+    background: #F1F5F9 !important;
+    color: #2563EB !important;
+}
+
+.sidebar .nav-item.active {
+    background: #EFF6FF !important;
+    color: #2563EB !important;
+    font-weight: 700 !important;
+    border-color: #BFDBFE !important;
+}
+
+.sidebar .nav-item.active i {
+    color: #2563EB !important;
+}
+
+.sidebar .nav-item i {
+    width: 20px !important;
+    text-align: center !important;
+    font-size: 15px !important;
+    color: #64748B !important;
+    transition: color 0.15s ease !important;
+}
+
+.sidebar .nav-item:hover i {
+    color: #2563EB !important;
+}
+
+/* ========== LOGOUT ITEM ========== */
+.sidebar .nav-item.logout-item {
+    color: #DC2626 !important;
+    margin-top: 8px !important;
+    border-top: 1px solid #F1F5F9 !important;
+    padding-top: 12px !important;
+}
+
+.sidebar .nav-item.logout-item i {
+    color: #DC2626 !important;
+}
+
+.sidebar .nav-item.logout-item:hover {
+    background: #FEF2F2 !important;
+    color: #DC2626 !important;
+}
+
+/* ========== SIDEBAR FOOTER ========== */
+.sidebar .sidebar-footer {
+    background: #F8FAFC !important;
+    border-top: 1px solid #E2E8F0 !important;
+    padding: 14px 18px !important;
+}
+
+.sidebar .sidebar-footer .user-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #0F172A !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+}
+
+.sidebar .sidebar-footer .user-info i {
+    color: #2563EB !important;
+    font-size: 20px !important;
+}
+
+.sidebar .sidebar-footer #sidebarRole {
+    color: #2563EB !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin-top: 4px !important;
+}
+
+/* ========== MOBILE MENU BUTTON ========== */
+.mobile-menu-btn {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+    width: 44px !important;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 18px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.mobile-menu-btn:hover {
+    background: #EFF6FF !important;
+    border-color: #BFDBFE !important;
+    color: #2563EB !important;
+}
+
+/* ========== SIDEBAR OVERLAY ========== */
+.sidebar-overlay {
+    background: rgba(15, 23, 42, 0.5) !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+/* ========== CLIENT SIDEBAR (même style) ========== */
+.client-sidebar {
+    background: #FFFFFF !important;
+    border-right: 1px solid #E2E8F0 !important;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.03) !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.client-sidebar .sidebar-header {
+    background: #FFFFFF !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+    padding: 20px 18px !important;
+}
+
+.client-sidebar .sidebar-logo {
+    width: 52px !important;
+    height: 52px !important;
+    background: linear-gradient(135deg, #EFF6FF, #DBEAFE) !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 12px !important;
+    border: 1px solid #BFDBFE !important;
+}
+
+.client-sidebar .sidebar-logo-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 12px !important;
+}
+
+.client-sidebar .sidebar-header h2 {
+    color: #0F172A !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.4px !important;
+    margin: 0 0 2px 0 !important;
+}
+
+.client-sidebar .sidebar-header h2 span {
+    color: #2563EB !important;
+}
+
+.client-sidebar .sidebar-subtitle {
+    color: #64748B !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
+}
+
+.client-sidebar .sidebar-nav {
+    padding: 12px 10px !important;
+    flex: 1 !important;
+    overflow-y: auto !important;
+}
+
+.client-sidebar .sidebar-nav ul {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 0 12px 0 !important;
+}
+
+.client-sidebar .nav-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 12px 16px !important;
+    border-radius: 10px !important;
+    color: #334155 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    margin-bottom: 2px !important;
+    border: 1px solid transparent !important;
+    user-select: none !important;
+}
+
+.client-sidebar .nav-item:hover {
+    background: #F1F5F9 !important;
+    color: #2563EB !important;
+}
+
+.client-sidebar .nav-item.active {
+    background: #EFF6FF !important;
+    color: #2563EB !important;
+    font-weight: 700 !important;
+    border-color: #BFDBFE !important;
+}
+
+.client-sidebar .nav-item.active i {
+    color: #2563EB !important;
+}
+
+.client-sidebar .nav-item i {
+    width: 20px !important;
+    text-align: center !important;
+    font-size: 15px !important;
+    color: #64748B !important;
+    transition: color 0.15s ease !important;
+}
+
+.client-sidebar .nav-item:hover i {
+    color: #2563EB !important;
+}
+
+.client-sidebar .nav-item.logout-item {
+    color: #DC2626 !important;
+    margin-top: 8px !important;
+    border-top: 1px solid #F1F5F9 !important;
+    padding-top: 12px !important;
+}
+
+.client-sidebar .nav-item.logout-item i {
+    color: #DC2626 !important;
+}
+
+.client-sidebar .nav-item.logout-item:hover {
+    background: #FEF2F2 !important;
+}
+
+.client-sidebar .sidebar-footer {
+    background: #F8FAFC !important;
+    border-top: 1px solid #E2E8F0 !important;
+    padding: 14px 18px !important;
+}
+
+.client-sidebar .sidebar-footer .user-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #0F172A !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+}
+
+.client-sidebar .sidebar-footer .user-info i {
+    color: #2563EB !important;
+    font-size: 20px !important;
+}
+
+/* ========== CONTENU DYNAMIQUE (cartes admin) ========== */
+#dynamicContent .content-card {
+    background: #FFFFFF !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(0,0,0,0.04) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    padding: 24px !important;
+    margin-bottom: 20px !important;
+}
+
+#dynamicContent .card-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 16px !important;
+    border-bottom: 1px solid #F1F5F9 !important;
+}
+
+#dynamicContent .card-header h3 {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: #0F172A !important;
+    letter-spacing: -0.5px !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+#dynamicContent .card-header h3 i {
+    background: linear-gradient(135deg, #3B82F6, #1D4ED8) !important;
+    color: #FFFFFF !important;
+    padding: 8px !important;
+    border-radius: 10px !important;
+    font-size: 16px !important;
+}
+
+/* ========== BUTTONS ADD ========== */
+#dynamicContent .btn-add {
+    background: linear-gradient(135deg, #3B82F6, #2563EB) !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 10px !important;
+    padding: 10px 18px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.3) !important;
+    transition: all 0.2s ease !important;
+}
+
+#dynamicContent .btn-add:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(37,99,235,0.4) !important;
+}
+
+/* ========== TABLES ============ */
+#dynamicContent .table-container {
+    background: #FFFFFF !important;
+    border-radius: 12px !important;
+    border: 1px solid #E2E8F0 !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+#dynamicContent .data-table {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    font-size: 14px !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+#dynamicContent .data-table thead th {
+    background: #F8FAFC !important;
+    color: #64748B !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    padding: 14px 12px !important;
+    border-bottom: 2px solid #E2E8F0 !important;
+    white-space: nowrap !important;
+    text-align: left !important;
+}
+
+#dynamicContent .data-table tbody td {
+    padding: 14px 12px !important;
+    border-bottom: 1px solid #F1F5F9 !important;
+    color: #334155 !important;
+    font-size: 14px !important;
+    vertical-align: middle !important;
+}
+
+#dynamicContent .data-table tbody tr:hover td {
+    background: #FAFBFC !important;
+}
+
+/* ========== RESPONSIVE SIDEBAR ========== */
+@media (max-width: 768px) {
+    .dashboard .main-content {
+        padding: 16px !important;
+    }
+
+    .dashboard .page-header {
+        padding: 16px 20px !important;
+        margin-bottom: 16px !important;
+    }
+
+    .dashboard .page-header .header-title h2 {
+        font-size: 18px !important;
+    }
+
+    .dashboard .page-header .header-title i {
+        padding: 8px !important;
+        font-size: 15px !important;
+    }
+
+    .sidebar .sidebar-header {
+        padding: 16px 16px !important;
+    }
+
+    .sidebar .sidebar-logo {
+        width: 44px !important;
+        height: 44px !important;
+    }
+
+    .sidebar .sidebar-header h2 {
+        font-size: 16px !important;
+    }
+
+    .sidebar .nav-item {
+        padding: 11px 14px !important;
+        font-size: 13px !important;
+    }
+
+    .mobile-menu-btn {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 16px !important;
+    }
+
+    #dynamicContent .content-card {
+        padding: 16px !important;
+        border-radius: 14px !important;
+    }
+
+    #dynamicContent .card-header h3 {
+        font-size: 18px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard .main-content {
+        padding: 12px !important;
+    }
+
+    .dashboard .page-header {
+        padding: 14px 16px !important;
+    }
+
+    .dashboard .page-header .header-title h2 {
+        font-size: 16px !important;
+    }
+
+    #dynamicContent .content-card {
+        padding: 12px !important;
+    }
+
+    #dynamicContent .card-header h3 {
+        font-size: 16px !important;
+    }
+}
+
+/* ========== SCROLLBAR DOUCE POUR NAV ========== */
+.sidebar .sidebar-nav::-webkit-scrollbar,
+.client-sidebar .sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar .sidebar-nav::-webkit-scrollbar-track,
+.client-sidebar .sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar .sidebar-nav::-webkit-scrollbar-thumb,
+.client-sidebar .sidebar-nav::-webkit-scrollbar-thumb {
+    background: #E2E8F0;
+    border-radius: 2px;
+}
+
+/* ========== SIDEBAR ACTIVE STATE (compatible avec admin.js) ========== */
+.sidebar .nav-item.active::before {
+    content: '' !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 3px !important;
+    height: 60% !important;
+    background: #2563EB !important;
+    border-radius: 0 3px 3px 0 !important;
+}
+</style>
+</head>
+<body>
+<!-- ==================== AUTH PAGE ==================== -->
+<div id="authPage" class="login-wrapper">
+<div class="login-container" id="loginContainer">
+<div class="login-brand">
+<div class="brand-icon"><img src="logo.png" alt="E-SOLUTION POS" class="brand-logo" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-store\' style=\'font-size:50px;color:#14B8A6;\'></i>';"></div>
+<h1><span>E-SOLUTION</span> POS</h1>
+<p style="color:rgba(255,255,255,0.8); font-size:0.9rem;">Point de vente • Gestion complète</p>
+</div>
+<div class="login-form">
+<h2>🔐 Connexion</h2>
+<form id="loginForm" onsubmit="return handleLogin(event)">
+<div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="loginEmail" placeholder="Email" required></div>
+<div class="input-group"><i class="fas fa-lock"></i><input type="password" id="loginPassword" placeholder="Mot de passe" required></div>
+<div style="display:flex;gap:8px;align-items:stretch;margin-top:18px;">
+<button type="submit" class="btn-login" id="loginBtn" style="margin-top:0;flex:1;"><i class="fas fa-sign-in-alt"></i> Se connecter</button>
+<button type="button" id="quickLoginBtn" onclick="tryAdminQuickLogin()" title="Connexion rapide" style="display:none;background:#2563EB;color:#fff;border:none;border-radius:10px;width:52px;min-width:52px;cursor:pointer;font-size:1.2rem;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(37,99,235,0.3);transition:all 0.2s;margin-top:0;">
+<i class="fas fa-unlock"></i>
+</button>
+</div>
+</form>
+<div class="register-link">Pas de compte ? <strong onclick="showRegister()">Créer un compte</strong></div>
+</div>
+</div>
+<div class="register-container hidden" id="registerContainer">
+<div class="register-brand">
+<div class="brand-icon"><img src="logo.png" alt="E-SOLUTION POS" class="brand-logo" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-store\' style=\'font-size:50px;color:#14B8A6;\'></i>';"></div>
+<h1><span>E-SOLUTION</span> POS</h1>
+<p style="color:rgba(255,255,255,0.8);">Inscription rapide</p>
+</div>
+<div class="register-form">
+<h2>📝 Créer un compte</h2>
+<form id="registerForm" onsubmit="return handleRegister(event)">
+<div class="input-group"><i class="fas fa-user"></i><input type="text" id="regNom" placeholder="Nom" required></div>
+<div class="input-group"><i class="fas fa-user"></i><input type="text" id="regPrenom" placeholder="Prénom" required></div>
+<div class="input-group"><i class="fas fa-at"></i><input type="text" id="regUsername" placeholder="Nom d'utilisateur" required></div>
+<div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="regEmail" placeholder="Email" required></div>
+<div class="input-group"><i class="fas fa-phone"></i><input type="tel" id="regTelephone" placeholder="Téléphone" required></div>
+<div class="input-group"><i class="fas fa-briefcase"></i>
+<select id="regRole">
+<option value="client">Client</option>
+<option value="caissier">Caissier</option>
+<option value="admin">Administrateur</option>
+</select>
+</div>
+<div class="input-group"><i class="fas fa-lock"></i><input type="password" id="regPassword" placeholder="Mot de passe (min 6 caractères)" required></div>
+<button type="submit" class="btn-login" id="registerBtn"><i class="fas fa-user-plus"></i> Créer mon compte</button>
+</form>
+<div class="register-link">Déjà inscrit ? <strong onclick="showLogin()">Se connecter</strong></div>
+</div>
+</div>
+</div>
+
+<!-- ==================== DASHBOARD ADMIN/CAISSIER ==================== -->
+<div id="dashboardPage" class="dashboard hidden">
+<button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+<div class="sidebar-header">
+<div class="sidebar-logo"><img src="logo.png" alt="Logo" class="sidebar-logo-img" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-store\' style=\'font-size:30px;color:#14B8A6;\'></i>';"></div>
+<h2>E-SOLUTION <span>POS</span></h2>
+<div class="sidebar-subtitle">POINT DE VENTE</div>
+</div>
+<div class="sidebar-nav">
+<ul id="navMenu"></ul>
+<ul>
+<li class="nav-item logout-item" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</li>
+</ul>
+</div>
+<div class="sidebar-footer">
+<div class="user-info" id="sidebarUserInfo"><i class="fas fa-user-circle"></i> <span>Chargement...</span></div>
+<div id="sidebarRole" style="font-size:0.7rem; color:#66BB6A; margin-top:5px;"></div>
+</div>
+</div>
+<div class="main-content">
+<div class="page-header">
+<div class="header-title"><i class="fas fa-store"></i><h2 id="pageTitle">Dashboard</h2></div>
+</div>
+<div id="dynamicContent"></div>
+</div>
+</div>
+
+<!-- ==================== CLIENT PAGE ==================== -->
+<div id="clientPage" class="dashboard hidden">
+<button class="mobile-menu-btn" onclick="toggleClientSidebar()"><i class="fas fa-bars"></i></button>
+<div class="sidebar-overlay" id="clientSidebarOverlay" onclick="closeClientSidebar()"></div>
+<div class="client-sidebar" id="clientSidebar">
+<div class="sidebar-header">
+<div class="sidebar-logo"><img src="logo.png" alt="Logo" class="sidebar-logo-img" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-store\' style=\'font-size:30px;color:#14B8A6;\'></i>';"></div>
+<h2>E-SOLUTION <span>POS</span></h2>
+<div class="sidebar-subtitle">BIENVENUE</div>
+</div>
+<div class="sidebar-nav">
+<ul>
+<li class="nav-item active" onclick="clientNavigate('commander')"><i class="fas fa-shopping-bag"></i> Commander</li>
+<li class="nav-item" onclick="clientNavigate('historique')"><i class="fas fa-history"></i> Historique</li>
+<li class="nav-item" onclick="clientNavigate('parametres')"><i class="fas fa-user-cog"></i> Paramètres</li>
+<li class="nav-item logout-item" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</li>
+</ul>
+</div>
+<div class="sidebar-footer">
+<div class="user-info" id="clientSidebarInfo"><i class="fas fa-user-circle"></i> <span>Client</span></div>
+</div>
+</div>
+<div class="main-content">
+<div class="page-header">
+<div class="header-title"><i class="fas fa-shopping-bag"></i><h2 id="clientPageTitle">Commander</h2></div>
+</div>
+<div id="clientDynamicContent"></div>
+</div>
+</div>
+
+<!-- ==================== MENU TACTILE PAGE ==================== -->
+<div id="menuTactilePage" class="hidden" style="background:#f8fafc; min-height:100vh;">
+<div id="menuTactileContent" style="padding-bottom:100px;"></div>
+</div>
+
+<!-- ==================== MODAL ==================== -->
+<div id="modalOverlay" class="modal hidden">
+<div class="modal-content">
+<div class="modal-header">
+<h3 id="modalTitle">Titre</h3>
+<span class="modal-close" onclick="closeModal()">&times;</span>
+</div>
+<div class="modal-body" id="modalBody">
+Contenu du modal
+</div>
+</div>
+</div>
+
+<!-- ==================== SCRIPTS (ORDRE CORRIGÉ POUR PAGINATION) ==================== -->
+<script src="db-cache.js"></script>
+<script src="firebase-config.js"></script>
+<script src="auth.js"></script>
+<script src="admin-crud.js"></script> <!-- ✅ CHARGÉ AVANT script.js -->
+<script src="admin-ventes.js"></script> <!-- ✅ CHARGÉ AVANT script.js -->
+<script src="admin-credits.js"></script> <!-- ✅ CHARGÉ AVANT script.js -->
+<script src="admin.js"></script> <!-- ✅ CHARGÉ AVANT script.js -->
+<script src="script.js"></script> <!-- ✅ script.js APRÈS les autres -->
+<script src="pos-ai.js"></script> <!-- ✅ AJOUT : pos-ai.js AVANT pos.js -->
+<script src="pos.js"></script>
+<script src="client.js"></script>
+<script src="menutactile.js"></script>
+<script src="depenses.js"></script>
+<script src="statistics.js"></script>
+<script src="caissier.js"></script>
+<script src="pos-audio.js"></script>
+
+<!-- ✅ CORRECTION escapeHtml - INSTALLÉE APRÈS TOUS LES SCRIPTS -->
+<script>
+window.escapeHtml = function(str) {
+    if (str === null || str === undefined) return '';
+    if (typeof str !== 'string') str = String(str);
+    return str.replace(/[&<>"']/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        if (m === '"') return '&quot;';
+        if (m === "'") return '&#39;';
+        return m;
+    });
+};
+try { escapeHtml = window.escapeHtml; } catch(e) {}
+console.log('✅ escapeHtml blindée installée');
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+navigator.serviceWorker.register('sw.js').then(reg => console.log('SW ✓', reg)).catch(err => console.error('SW ✗', err));
+}
+
+// ✅ AJOUT : Sauvegarde automatique au chargement de l'application
+window.addEventListener('load', function() {
+setTimeout(function() {
+if (typeof CacheDB !== 'undefined' && CacheDB.saveAll) {
+console.log('💾 Sauvegarde initiale des données...');
+CacheDB.saveAll();
+if (typeof CacheDB.setupRealtime === 'function') {
+CacheDB.setupRealtime();
+}
+}
+}, 2000);
+});
+</script>
+
+</body>
+</html>
